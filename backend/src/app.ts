@@ -2,6 +2,8 @@ import express from 'express';
 import routes from './routes';
 import mysql from 'mysql';
 require('dotenv').config();
+// import sequelize
+import { Sequelize } from 'sequelize';
 
 class App {
     public server;
@@ -29,19 +31,18 @@ class App {
     }
 
     database() {
-        // Database connection
-        const connection = mysql.createConnection({
+        const sequelize = new Sequelize(this.db_name, this.db_user, this.db_pass, {
             host: this.db_host,
-            user: this.db_user, 
-            password: this.db_pass,
-            database: this.db_name
+            dialect: 'mysql'
         });
 
-        connection.connect(function(err) {
-            if (err) throw err;
-            console.log("Connected To Mysql!");
+        sequelize.authenticate().then(() => {
+            console.log('Connection has been established successfully.');
+        }).catch(err =>{ 
+            console.error('Unable to connect to the database:', err);
         });
     }
+
 }
 
 export default new App().server;
