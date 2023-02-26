@@ -4,6 +4,8 @@ import mysql from 'mysql';
 require('dotenv').config();
 // import sequelize
 import { Sequelize } from 'sequelize';
+// import models
+import { initUser } from './models/User';
 
 class App {
     public server;
@@ -13,6 +15,8 @@ class App {
     private db_pass = process.env.DATABASE_PASSWORD;
     private db_host = process.env.DATABASE_HOST;
 
+    private sequelize : Sequelize;
+
     constructor() {
         this.server = express();
 
@@ -20,6 +24,10 @@ class App {
         this.routes();
 
         this.database();
+
+        this.initModels(this.sequelize);
+
+        this.initTables();
     }
 
     middlewares() {
@@ -27,7 +35,7 @@ class App {
     }
 
     routes() {
-        this.server.use(routes);
+        this.server.use('/api/v1', routes);
     }
 
     database() {
@@ -41,8 +49,20 @@ class App {
         }).catch(err =>{ 
             console.error('Unable to connect to the database:', err);
         });
+
+        this.sequelize = sequelize;
     }
 
+    initModels(sequelize : Sequelize) {
+        const models = [
+            initUser(sequelize)
+        ];
+        return models;
+    }
+
+    initTables() {
+        this.sequelize.sync();
+    }
 }
 
 export default new App().server;
