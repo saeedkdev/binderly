@@ -1,7 +1,8 @@
-import { User, initUser } from '../models/User';
+import { User } from '../models/User';
 import { Request, Response } from 'express';
-
-// create an authentication controller to handle the login and register
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+require('dotenv').config();
 
 export const authController = {
     login: async (request: Request, response: Response) => {
@@ -17,15 +18,20 @@ export const authController = {
             return response.status(400).json({ message: 'User not active' });
         }
 
-        if (user.password !== password) {
+        let isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
             return response.status(400).json({ message: 'Invalid password' });
         }
-        
-        // TODO jwt token
 
-        return response.json(user);
+        let token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+            expiresIn: 86400 // expires in 24 hours
+        });
+
+        return response.json({ auth: true, token });
     },
     register: async (request: Request, response: Response) => {
+
+        console.log(request.body);
 
         const { name, email, password, phone } = request.body;
         
@@ -35,8 +41,25 @@ export const authController = {
             return response.status(400).json({ message: 'User already exists' });
         }
 
-        const newUser = await User.create({ name, email, password, phone });
+        let hashedPassword = await bcrypt.hash(password, 10);
+
+        console.log('hashed pass', hashedPassword);
+
+        const newUser = await User.create({
+            name: name,
+            email: email,
+            password: hashedPassword,
+            phone: phone,
+        });
+
+        if (!newUser) {
+            return response.status(400).json({ message: 'Error creating user' });
+        }
+
+        let token = jwt.sign({ email: newUser.email }, process.env.JWT_SECRET, {
+            expiresIn: 86400 // expires in 24 hours
+        });
         
-        return response.json(newUser);
+        return response.json({ auth: true, token });
     }
 }
