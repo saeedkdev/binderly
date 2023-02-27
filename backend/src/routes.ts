@@ -7,7 +7,10 @@ routes.get('/', (request, response) => {
     return response.json({ message: 'Hello World' });
 });
 
+// Auth
 routes.post('/login', authController.login);
 routes.post('/register', authController.register);
+
+// User
 
 export default routes;
