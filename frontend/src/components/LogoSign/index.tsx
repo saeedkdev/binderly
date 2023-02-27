@@ -8,61 +8,26 @@ import {
   useTheme
 } from '@mui/material';
 import Link from 'src/components/Link';
+import Image from 'next/image';
 
 const LogoWrapper = styled(Link)(
   ({ theme }) => `
         color: ${theme.palette.text.primary};
         display: flex;
         text-decoration: none;
-        width: 53px;
-        margin: 0 auto;
+        margin: 0 0 0 2rem;
         font-weight: ${theme.typography.fontWeightBold};
 `
 );
 
 const LogoSignWrapper = styled(Box)(
   () => `
-        width: 52px;
-        height: 38px;
+        width: auto;
+        height: 70px;
+        text-align: center;
 `
 );
 
-const LogoSign = styled(Box)(
-  ({ theme }) => `
-        background: ${theme.general.reactFrameworkColor};
-        width: 18px;
-        height: 18px;
-        border-radius: ${theme.general.borderRadiusSm};
-        position: relative;
-        transform: rotate(45deg);
-        top: 3px;
-        left: 17px;
-
-        &:after, 
-        &:before {
-            content: "";
-            display: block;
-            width: 18px;
-            height: 18px;
-            position: absolute;
-            top: -1px;
-            right: -20px;
-            transform: rotate(0deg);
-            border-radius: ${theme.general.borderRadiusSm};
-        }
-
-        &:before {
-            background: ${theme.palette.primary.main};
-            right: auto;
-            left: 0;
-            top: 20px;
-        }
-
-        &:after {
-            background: ${theme.palette.secondary.main};
-        }
-`
-);
 
 const LogoSignInner = styled(Box)(
   ({ theme }) => `
@@ -99,7 +64,7 @@ function Logo() {
 
   return (
     <TooltipWrapper
-      title="Tokyo Free White Next.js Typescript Admin Dashboard"
+      title="Binderly"
       arrow
     >
       <LogoWrapper href="/">
@@ -108,17 +73,20 @@ function Logo() {
             '.MuiBadge-badge': {
               fontSize: theme.typography.pxToRem(11),
               right: -2,
-              top: 8
+              top: 25
             }
           }}
           overlap="circular"
           color="success"
-          badgeContent="1.0"
+          badgeContent="Beta"
         >
           <LogoSignWrapper>
-            <LogoSign>
-              <LogoSignInner />
-            </LogoSign>
+            <Image
+                src="/static/images/logo/logo-no-background.png"
+                alt="Binderly"
+                width={150}
+                height={100}
+            />
           </LogoSignWrapper>
         </Badge>
       </LogoWrapper>
